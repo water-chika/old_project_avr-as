@@ -11,3 +11,6 @@ sample.bin: sample.s
 
 sample.my-avr-as.bin: sample.s ../avr-as
 	cat sample.s | ../avr-as > sample.my-avr-as.bin
+
+clean:
+	rm --force sample.bin sample.my-avr-as.bin sample.elf

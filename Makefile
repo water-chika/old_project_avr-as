@@ -5,3 +5,7 @@ avr-as: as.c
 
 test: avr-as
 	cd test; make
+
+clean:
+	rm --force avr-as
+	cd test; make clean
