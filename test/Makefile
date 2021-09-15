@@ -6,11 +6,12 @@ all: sample.bin sample.my-avr-as.bin
 	fi
 
 sample.bin: sample.s
-	avr-as sample.s -o sample.elf
+	avr-as -mmcu=avr5 sample.s -o sample.elf.o
+	avr-ld sample.elf.o -o sample.elf
 	avr-objcopy --output-target binary sample.elf sample.bin
 
-sample.my-avr-as.bin: sample.s ../avr-as
-	cat sample.s | ../avr-as > sample.my-avr-as.bin
+sample.my-avr-as.bin: sample.my-avr-as.s ../avr-as
+	cat sample.my-avr-as.s | ../avr-as > sample.my-avr-as.bin
 
 clean:
-	rm --force sample.bin sample.my-avr-as.bin sample.elf
+	rm --force sample.bin sample.my-avr-as.bin sample.elf sample.elf.o

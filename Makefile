@@ -1,5 +1,5 @@
 avr-as: as.c
-	gcc as.c -o avr-as
+	gcc -g as.c -o avr-as
 
 .PHONY: test
 

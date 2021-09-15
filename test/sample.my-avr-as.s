@@ -29,55 +29,55 @@ bld r0,0
 bld r31,7
 bld r16,3
 
-brbc 0,.+124
-brbc 7,.-128
-brbc 7,.+124
+brbc 0,62
+brbc 7,-64
+brbc 7,62
 
-brbs 0,.+124
-brbs 7,.-128
-brbs 7,.+124
-brbs 0,.-128
+brbs 0,+62
+brbs 7,-64
+brbs 7,+62
+brbs 0,-64
 
-brcc .+124
-brcc .-128
+brcc +62
+brcc -64
 
-brcs .+124
-brcs .-128
+brcs +62
+brcs -64
 
 break
 
-breq .+124
-breq .+0
+breq +62
+breq +0
 
-brge .-128
+brge -64
 
-brhc .+4
+brhc +2
 
-brhs .+16
+brhs +8
 
-brid .+20
+brid +10
 
-brie .+32
+brie +16
 
-brlo .-64
+brlo -32
 
-brlt .+60
+brlt +30
 
-brmi .-64
+brmi -32
 
-brne .+64
+brne +32
 
-brpl .+124
+brpl +62
 
-brsh .-124
+brsh -62
 
-brtc .+124
+brtc +62
 
-brts .-92
+brts -46
 
-brvc .+64
+brvc +32
 
-brvs .+64
+brvs +32
 
 bset 0
 bset 7
@@ -89,7 +89,7 @@ bst r0, 7
 bst r31, 7
 
 call 0
-call 0x1fffe
+call 0xffff
 
 cbi 0,0
 cbi 31,0
