@@ -112,3 +112,41 @@ cls
 clt
 clv
 clz
+
+com r0
+com r31
+
+cp r0,r0
+cp r31,r31
+cp r0,r31
+
+cpc r0,r0
+cpc r31,r31
+cpc r0,r31
+
+cpi r16,0
+cpi r16,255
+cpi r31,255
+cpi r31,0
+
+cpse r0,r0
+cpse r31,r31
+cpse r0,r31
+
+dec r0
+dec r16
+
+des 0
+des 0xf
+
+eicall
+
+eijmp
+
+elpm r0, z
+elpm r16, z+
+elpm
+
+eor r0, r31
+eor r0, r17
+eor r29,r14

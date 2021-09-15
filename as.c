@@ -47,6 +47,7 @@ void get_rd(char* str, int* rd)
 	char* rd_str;
 	rd_str = strtok(str, " ,\n");
 	*rd = reg_from_str(rd_str);
+	assert(*rd >= 0 && *rd < 32);
 }
 
 void get_rd_imm(char* rd_imm_str, int* rd, int* imm)
@@ -104,6 +105,15 @@ uint16_t get_opcode_rd_b(uint8_t msb7bits, uint8_t rd, uint8_t lsb4, uint8_t bit
 	return opcode;
 }
 
+uint16_t get_opcode_rd(uint8_t msb7bits, uint8_t rd, uint8_t lsb4bits)
+{
+	uint16_t opcode = pack_16_from_4(msb7bits>>3,
+			(msb7bits & 0b111) << 1| (rd >> 4),
+			rd,
+			lsb4bits);
+	return opcode;
+}
+
 struct opcode_offset7
 {
 	char op[8];
@@ -142,6 +152,22 @@ struct opcode_rd_rr rd_rr_instructs[] = {
 	{"adc", 0b000111},
 	{"add", 0b000011},
 	{"and", 0b001000},
+	{"cp",	0b000101},
+	{"cpc",	0b000001},
+	{"cpse",0b000100},
+	{"eor",	0b001001},
+};
+
+struct opcode_rd
+{
+	char op[8];
+	uint8_t msb7bits;
+	uint8_t lsb4bits;
+};
+
+struct opcode_rd rd_instructs[] = {
+	{"com",	0b1001010, 0b0000},
+	{"dec", 0b1001010, 0b1010},
 };
 
 struct opcode
@@ -160,6 +186,8 @@ struct opcode instructs[] = {
 	{"clt",		0b1001010011101000},
 	{"clv",		0b1001010010111000},
 	{"clz",		0b1001010010011000},
+	{"eicall",	0b1001010100011001},
+	{"eijmp",	0b1001010000011001},
 };
 
 
@@ -174,7 +202,61 @@ int main(void)
 
 		cmd = strtok(line, " \n");
 		if (cmd == NULL)continue;
-		arguments = strtok(NULL, "\n");
+		arguments = strtok(NULL, "\n"); //this delemiters should not contain space.
+
+		int recognize_flag = 0;
+		for (int i = 0; i < sizeof(instructs)/sizeof(instructs[0]); i++)
+		{
+			if (0 == strcmp(cmd, instructs[i].op))
+			{
+				uint16_t opcode = instructs[i].opcode;
+				fwrite(&opcode, sizeof(opcode), 1, stdout);
+
+				recognize_flag = 1;
+				break;
+			}
+		}
+		if (recognize_flag)continue;
+
+		if (0 == strcmp(cmd, "elpm"))
+		{
+			if (arguments == NULL)
+			{
+				uint16_t opcode = 0b1001010111011000;
+				fwrite(&opcode, sizeof(opcode), 1, stdout);
+			}
+			else
+			{
+				char* rd_str,* z;
+				rd_str = strtok(arguments, " ,");
+				z = strtok(NULL, " ,\n");
+				if (0 == strcmp(z, "z"))
+				{
+					int rd;
+					get_rd(rd_str, &rd);
+					uint16_t opcode = get_opcode_rd(0b1001000,
+							rd,
+							0b0110);
+					fwrite(&opcode, sizeof(opcode), 1, stdout);
+				}
+				else if (0 == strcmp(z, "z+"))
+				{
+					int rd;
+					get_rd(rd_str, &rd);
+					uint16_t opcode = get_opcode_rd(0b1001000,
+							rd,
+							0b0111);
+					fwrite(&opcode, sizeof(opcode), 1, stdout);
+				}
+				else
+				{
+					fprintf(stderr, "elpm: error %s\n", z);
+				}
+			}
+			continue;
+		}
+
+		assert(arguments);
 		if (0 == strcmp(cmd, "andi"))
 		{
 			int rd;
@@ -191,6 +273,7 @@ int main(void)
 		}
 		else if (0 == strcmp(cmd, "adiw"))
 		{
+			assert(arguments);
 			int rd, imm;
 			get_rd_imm(arguments, &rd, &imm);
 			assert(imm < 64 && imm >= 0);
@@ -210,6 +293,7 @@ int main(void)
 		}
 		else if (0 == strcmp(cmd, "asr"))
 		{
+			assert(arguments);
 			char* rd_str = strtok(arguments, " \n");
 			int rd = reg_from_str(rd_str);
 
@@ -221,6 +305,7 @@ int main(void)
 		}
 		else if (0 == strcmp(cmd, "bclr"))
 		{
+			assert(arguments);
 			char* s_str = strtok(arguments, " \n");
 			int s;
 			sscanf(s_str, "%i", &s);
@@ -234,6 +319,7 @@ int main(void)
 		}
 		else if (0 == strcmp(cmd, "bld"))
 		{
+			assert(arguments);
 			int rd, b;
 			get_rd_imm(arguments, &rd, &b);
 			assert((b&0x7)==b);
@@ -246,6 +332,7 @@ int main(void)
 		}
 		else if (0 == strcmp(cmd, "brbc"))
 		{
+			assert(arguments);
 			int s,k;
 			get_imm_imm(arguments, &s, &k);
 			assert((s&0b111) == s);
@@ -259,6 +346,7 @@ int main(void)
 		}
 		else if (0 == strcmp(cmd, "brbs"))
 		{
+			assert(arguments);
 			int s,k;
 			get_imm_imm(arguments, &s, &k);
 			assert((s&0b111) == s);
@@ -272,6 +360,7 @@ int main(void)
 		}
 		else if (0 == strcmp(cmd, "bset"))
 		{
+			assert(arguments);
 			int s;
 			get_imm(arguments, &s);
 
@@ -281,6 +370,7 @@ int main(void)
 		}
 		else if (0 == strcmp(cmd, "bst"))
 		{
+			assert(arguments);
 			int rd, b;
 			get_rd_imm(arguments, &rd, &b);
 
@@ -289,6 +379,7 @@ int main(void)
 		}
 		else if (0 == strcmp(cmd, "call"))
 		{
+			assert(arguments);
 			int imm;
 			get_imm(arguments, &imm);
 			uint32_t addr = imm&0x3fffff;
@@ -332,20 +423,53 @@ int main(void)
 					rd,rd);
 			fwrite(&opcode, sizeof(opcode), 1, stdout);
 		}
+		else if (0 == strcmp(cmd, "cpi"))
+		{
+			int rd,k;
+			get_rd_imm(arguments, &rd, &k);
+			assert(k>=0 && k < 256);
+
+			int rd_code = rd - 16;
+			
+			uint16_t opcode = pack_16_from_4(0b0011,
+					(k>>4),
+					rd_code,
+					k&0b1111);
+			fwrite(&opcode, sizeof(opcode), 1, stdout);
+		}
+		else if (0 == strcmp(cmd, "des"))
+		{
+			int k;
+			get_imm(arguments, &k);
+			assert(k >= 0 && k <= 0x0f);
+
+			uint16_t opcode = pack_16_from_4(0b1001,
+					0b0100,
+					k,
+					0b1011);
+			fwrite(&opcode, sizeof(opcode), 1, stdout);
+		}
 		else
 		{
 			int recognize_flag = 0;
-			for (int i = 0; i < sizeof(instructs)/sizeof(instructs[0]); i++)
+			for (int i = 0; i < sizeof(rd_instructs)/sizeof(rd_instructs[0]); i++)
 			{
-				if (0 == strcmp(cmd, instructs[i].op))
+				if (0 == strcmp(cmd, rd_instructs[i].op))
 				{
-					uint16_t opcode = instructs[i].opcode;
+					int rd;
+					get_rd(arguments, &rd);
+
+					uint16_t opcode = pack_16_from_4(rd_instructs[0].msb7bits>>3,
+							(rd_instructs[0].msb7bits & 0b111) << 1| (rd >> 4),
+							rd,
+							rd_instructs[0].lsb4bits);
 					fwrite(&opcode, sizeof(opcode), 1, stdout);
 
 					recognize_flag = 1;
 					break;
 				}
 			}
+
 			if (recognize_flag)continue;
 			for (int i = 0; i < sizeof(rd_rr_instructs)/sizeof(rd_rr_instructs[0]); i++)
 			{
