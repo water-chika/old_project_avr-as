@@ -1,12 +1,15 @@
 all: sample.bin sample.my-avr-as.bin
-	if cmp --verbose --print-bytes sample.bin sample.my-avr-as.bin ; then \
+	avr-objdump --target=binary --architecture avr:5 --disassemble-all sample.bin > sample.bin.dump
+	avr-objdump --target=binary --architecture avr:5 --disassemble-all sample.my-avr-as.bin > sample.my-avr-as.bin.dump
+	if cmp sample.bin sample.my-avr-as.bin ; then \
 		echo 'Test pass'; \
 	else \
+		diff sample.bin.dump sample.my-avr-as.bin.dump \
 		echo 'Test fail'; \
 	fi
 
 sample.bin: sample.s
-	avr-as -mmcu=avr5 sample.s -o sample.elf.o
+	avr-as -mmcu=atmega328 sample.s -o sample.elf.o
 	avr-ld sample.elf.o -o sample.elf
 	avr-objcopy --output-target binary sample.elf sample.bin
 

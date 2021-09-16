@@ -136,17 +136,6 @@ cpse r0,r31
 dec r0
 dec r16
 
-des 0
-des 0xf
-
-eicall
-
-eijmp
-
-elpm r0, z
-elpm r16, z+
-elpm
-
 eor r0, r31
 eor r0, r17
 eor r29,r14
