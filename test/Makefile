@@ -4,7 +4,7 @@ all: sample.bin sample.my-avr-as.bin
 	if cmp sample.bin sample.my-avr-as.bin ; then \
 		echo 'Test pass'; \
 	else \
-		diff sample.bin.dump sample.my-avr-as.bin.dump \
+		diff sample.bin.dump sample.my-avr-as.bin.dump; \
 		echo 'Test fail'; \
 	fi
 
@@ -17,4 +17,5 @@ sample.my-avr-as.bin: sample.my-avr-as.s ../avr-as
 	cat sample.my-avr-as.s | ../avr-as > sample.my-avr-as.bin
 
 clean:
-	rm --force sample.bin sample.my-avr-as.bin sample.elf sample.elf.o
+	rm --force sample.bin sample.my-avr-as.bin sample.elf sample.elf.o \
+		sample.bin.dump sample.my-avr-as.bin.dump

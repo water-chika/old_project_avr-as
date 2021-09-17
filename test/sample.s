@@ -95,10 +95,6 @@ cbi 0,0
 cbi 31,0
 cbi 31,7
 
-cbr r16, 0
-cbr r16, 7
-cbr r31, 0
-cbr r31, 7
 
 clc
 clh
@@ -139,3 +135,91 @@ dec r16
 eor r0, r31
 eor r0, r17
 eor r29,r14
+
+
+fmul r16,r16
+fmul r23, r23
+fmul r16, r23
+
+fmuls r16, r16
+fmuls r23,r23
+fmuls r23, r16
+
+fmulsu r16,r16
+fmulsu r23,r23
+fmulsu r16,r20
+
+icall
+
+ijmp
+
+in r0, 0
+in r0,63
+in r31,63
+
+inc r0
+inc r31
+
+jmp 0
+jmp 0x1fffe
+
+ld r0,x
+ld r31,x+
+ld r19,-x
+
+ld r31,y
+ld r19,y+
+ld r9,-y
+ldd r17,y+63
+ldd r31, y+0
+
+
+ld r31,z
+ld r19,z+
+ld r9,-z
+ldd r17,z+63
+ldd r31, z+0
+
+ldi r16, 255
+ldi r31, 0
+ldi r31, 255
+
+lds r0, 0
+lds r31, 65535
+lds r14, 33333
+
+lpm
+lpm r0,z
+lpm r31,z+
+
+lsr r1
+lsr r30
+
+mov r0,r7
+mov r31,r0
+
+movw r8,r0
+movw r28, r2
+
+mul r0,r7
+mul r31,r21
+
+muls r16,r19
+muls r18,r22
+
+mulsu r17,r17
+mulsu r23,r21
+
+neg r0
+neg r31
+
+nop
+
+or r0,r31
+or r31,r0
+
+ori r16,1
+ori r31,255
+
+out 63, r0
+out 0, r31
