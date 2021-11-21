@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <assert.h>
 
+#include "mnemonic.h"
+
 char current_line[32];
 
 #define assert_line(expr) assert((expr) || (fprintf(stderr, "%s",current_line),0))
@@ -139,131 +141,131 @@ uint16_t get_opcode_rd(uint8_t msb7bits, uint8_t rd, uint8_t lsb4bits)
 
 struct opcode_offset7
 {
-	char op[8];
+    enum mnemonic mnemonic;
 	uint8_t msb6bits;
 	uint8_t bit_offset;
 };
 
 struct opcode_offset7 br_instructs[] = {
-	{"brcc",0b111101,0},
-	{"brcs",0b111100,0},
-	{"breq",0b111100,1},
-	{"brge",0b111101,0b100},
-	{"brhc",0b111101,0b101},
-	{"brhs",0b111100,0b101},
-	{"brid",0b111101,0b111},
-	{"brie",0b111100,0b111},
-	{"brlo",0b111100,0b000},
-	{"brlt",0b111100,0b100},
-	{"brmi",0b111100,0b010},
-	{"brne",0b111101,0b001},
-	{"brpl",0b111101,0b010},
-	{"brsh",0b111101,0b000},
-	{"brtc",0b111101,0b110},
-	{"brts",0b111100,0b110},
-	{"brvc",0b111101,0b011},
-	{"brvs",0b111100,0b011},
+	{MNEMONIC_BRCC,0b111101,0},
+	{MNEMONIC_BRCS,0b111100,0},
+	{MNEMONIC_BREQ,0b111100,1},
+	{MNEMONIC_BRGE,0b111101,0b100},
+	{MNEMONIC_BRHC,0b111101,0b101},
+	{MNEMONIC_BRHS,0b111100,0b101},
+	{MNEMONIC_BRID,0b111101,0b111},
+	{MNEMONIC_BRIE,0b111100,0b111},
+	{MNEMONIC_BRLO,0b111100,0b000},
+	{MNEMONIC_BRLT,0b111100,0b100},
+	{MNEMONIC_BRMI,0b111100,0b010},
+	{MNEMONIC_BRNE,0b111101,0b001},
+	{MNEMONIC_BRPL,0b111101,0b010},
+	{MNEMONIC_BRSH,0b111101,0b000},
+	{MNEMONIC_BRTC,0b111101,0b110},
+	{MNEMONIC_BRTS,0b111100,0b110},
+	{MNEMONIC_BRVC,0b111101,0b011},
+	{MNEMONIC_BRVS,0b111100,0b011},
 };
 
 struct opcode_rd_rr
 {
-	char op[8];
+    enum mnemonic mnemonic;
 	uint8_t msb6bits;
 };
 
 struct opcode_rd_rr rd_rr_instructs[] = {
-	{"adc", 0b000111},
-	{"add", 0b000011},
-	{"and", 0b001000},
-	{"cp",	0b000101},
-	{"cpc",	0b000001},
-	{"cpse",0b000100},
-	{"eor",	0b001001},
-	{"mov",	0b001011},
-	{"mul",	0b100111},
-	{"or",	0b001010},
-	{"sbc",	0b000010},
+	{MNEMONIC_ADC, 0b000111},
+	{MNEMONIC_ADD, 0b000011},
+	{MNEMONIC_AND, 0b001000},
+	{MNEMONIC_CP,	0b000101},
+	{MNEMONIC_CPC,	0b000001},
+	{MNEMONIC_CPSE,0b000100},
+	{MNEMONIC_EOR,	0b001001},
+	{MNEMONIC_MOV,	0b001011},
+	{MNEMONIC_MUL,	0b100111},
+	{MNEMONIC_OR,	0b001010},
+	{MNEMONIC_SBC,	0b000010},
 };
 
 struct opcode_rd
 {
-	char op[8];
+    enum mnemonic mnemonic;
 	uint8_t msb7bits;
 	uint8_t lsb4bits;
 };
 
 struct opcode_rd rd_instructs[] = {
-	{"com",	0b1001010, 0b0000},
-	{"dec", 0b1001010, 0b1010},
-	{"inc",	0b1001010, 0b0011},
-	{"lsr", 0b1001010, 0b0110},
-	{"neg",	0b1001010, 0b0001},
-	{"pop", 0b1001000, 0b1111},
-	{"push",0b1001001, 0b1111},
-	{"ror",	0b1001010, 0b0111},
+	{MNEMONIC_COM,	0b1001010, 0b0000},
+	{MNEMONIC_DEC, 0b1001010, 0b1010},
+	{MNEMONIC_INC,	0b1001010, 0b0011},
+	{MNEMONIC_LSR, 0b1001010, 0b0110},
+	{MNEMONIC_NEG,	0b1001010, 0b0001},
+	{MNEMONIC_POP, 0b1001000, 0b1111},
+	{MNEMONIC_PUSH,0b1001001, 0b1111},
+	{MNEMONIC_ROR,	0b1001010, 0b0111},
 };
 
 struct opcode
 {
-	char op[8];
+    enum mnemonic mnemonic;
 	uint16_t opcode;
 };
 
 struct opcode instructs[] = {
-	{"break",	0b1001010110011000},
-	{"clc",		0b1001010010001000},
-	{"clh",		0b1001010011011000},
-	{"cli",		0b1001010011111000},
-	{"cln",		0b1001010010101000},
-	{"cls",		0b1001010011001000},
-	{"clt",		0b1001010011101000},
-	{"clv",		0b1001010010111000},
-	{"clz",		0b1001010010011000},
-	{"eicall",	0b1001010100011001},
-	{"eijmp",	0b1001010000011001},
-	{"icall",	0b1001010100001001},
-	{"ijmp",	0b1001010000001001},
-	{"nop",		0b0000000000000000},
-	{"ret",		0b1001010100001000},
-	{"reti",	0b1001010100011000},
+	{MNEMONIC_BREAK,	0b1001010110011000},
+	{MNEMONIC_CLC,		0b1001010010001000},
+	{MNEMONIC_CLH,		0b1001010011011000},
+	{MNEMONIC_CLI,		0b1001010011111000},
+	{MNEMONIC_CLN,		0b1001010010101000},
+	{MNEMONIC_CLS,		0b1001010011001000},
+	{MNEMONIC_CLT,		0b1001010011101000},
+	{MNEMONIC_CLV,		0b1001010010111000},
+	{MNEMONIC_CLZ,		0b1001010010011000},
+	{MNEMONIC_EICALL,	0b1001010100011001},
+	{MNEMONIC_EIJMP,	0b1001010000011001},
+	{MNEMONIC_ICALL,	0b1001010100001001},
+	{MNEMONIC_IJMP,	0b1001010000001001},
+	{MNEMONIC_NOP,		0b0000000000000000},
+	{MNEMONIC_RET,		0b1001010100001000},
+	{MNEMONIC_RETI,	0b1001010100011000},
 };
 
 //this imm in [0, 256)
 struct opcode_rd_imm
 {
-	char op[8];
+    enum mnemonic mnemonic;
 	uint8_t msb4bits;
 };
 
 struct opcode_rd_imm rd_imm_instructs[] = {
-	{"andi",	0b0111},
-	{"cpi",		0b0011},
-	{"ldi",		0b1110},
-	{"ori",		0b0110},
-	{"sbci",	0b0100},
+	{MNEMONIC_ANDI,	0b0111},
+	{MNEMONIC_CPI,		0b0011},
+	{MNEMONIC_LDI,		0b1110},
+	{MNEMONIC_ORI,		0b0110},
+	{MNEMONIC_SBCI,	0b0100},
 };
 
 struct opcode_a5_b3
 {
-	char op[8];
+    enum mnemonic mnemonic;
 	uint8_t msb8bits;
 };
 
 struct opcode_a5_b3 a5_b3_instructs[] = {
-	{"sbi",	0b10011010},
-	{"sbic",0b10011001},
-	{"sbis",0b10011011},
+	{MNEMONIC_SBI,	0b10011010},
+	{MNEMONIC_SBIC,0b10011001},
+	{MNEMONIC_SBIS,0b10011011},
 };
 
 struct opcode_rd_iw
 {
-	char op[8];
+    enum mnemonic mnemonic;
 	uint8_t msb8bits;
 };
 
 struct opcode_rd_iw rd_iw_instructs[] = {
-	{"sbiw",	0b10010111},
-	{"adiw",	0b10010110},
+	{MNEMONIC_SBIW,	0b10010111},
+	{MNEMONIC_ADIW,	0b10010110},
 };
 
 struct opcode_rr_b
@@ -325,11 +327,11 @@ int assemble_32(char* cmd, char* arguments)
 	return recognize_flag;
 }
 
-int assemble_16_class(char* cmd, char* arguments)
+int assemble_16_class(enum mnemonic mnemonic, char* arguments)
 {
 	for (int i = 0; i < sizeof(rd_iw_instructs)/sizeof(rd_iw_instructs[0]); i++)
 	{
-		if (0 == strcmp(cmd, rd_iw_instructs[i].op))
+		if (mnemonic == rd_iw_instructs[i].mnemonic)
 		{
 			int rd, imm;
 			get_rd_imm(arguments, &rd, &imm);
@@ -348,12 +350,12 @@ int assemble_16_class(char* cmd, char* arguments)
 					((imm>>2)&0b1100)|rd_code,
 					imm&0b1111);
 			fwrite(&opcode, sizeof(opcode), 1, stdout);
-			return 0;
+			return 1;
 		}
 	}
 	for (int i = 0; i < sizeof(instructs)/sizeof(instructs[0]); i++)
 	{
-		if (0 == strcmp(cmd, instructs[i].op))
+		if (mnemonic == instructs[i].mnemonic)
 		{
 			uint16_t opcode = instructs[i].opcode;
 			fwrite(&opcode, sizeof(opcode), 1, stdout);
@@ -363,7 +365,7 @@ int assemble_16_class(char* cmd, char* arguments)
 	}
 	for (int i = 0; i < sizeof(a5_b3_instructs)/sizeof(a5_b3_instructs[0]); i++)
 	{
-		if (0 == strcmp(cmd, a5_b3_instructs[i].op))
+		if (mnemonic == a5_b3_instructs[i].mnemonic)
 		{
 			int a,b;
 			get_imm_imm(arguments, &a, &b);
@@ -383,7 +385,7 @@ int assemble_16_class(char* cmd, char* arguments)
 
 	for (int i = 0; i < sizeof(rd_imm_instructs)/sizeof(rd_imm_instructs[0]); i++)
 	{
-		if (0 == strcmp(cmd, rd_imm_instructs[i].op))
+		if (mnemonic == rd_imm_instructs[i].mnemonic)
 		{
 			int rd, k;
 			get_rd_imm(arguments, &rd, &k);
@@ -403,7 +405,7 @@ int assemble_16_class(char* cmd, char* arguments)
 
 	for (int i = 0; i < sizeof(rd_instructs)/sizeof(rd_instructs[0]); i++)
 	{
-		if (0 == strcmp(cmd, rd_instructs[i].op))
+		if (mnemonic == rd_instructs[i].mnemonic)
 		{
 			int rd;
 			get_rd(arguments, &rd);
@@ -420,7 +422,7 @@ int assemble_16_class(char* cmd, char* arguments)
 
 	for (int i = 0; i < sizeof(rd_rr_instructs)/sizeof(rd_rr_instructs[0]); i++)
 	{
-		if (0 == strcmp(cmd, rd_rr_instructs[i].op))
+		if (mnemonic == rd_rr_instructs[i].mnemonic)
 		{
 			int rd,rr;
 			get_rd_rr(arguments, &rd, &rr);
@@ -435,7 +437,7 @@ int assemble_16_class(char* cmd, char* arguments)
 
 	for (int i = 0; i < sizeof(br_instructs)/sizeof(br_instructs[0]); i++)
 	{
-		if (0 == strcmp(cmd, br_instructs[i].op))
+		if (mnemonic == br_instructs[i].mnemonic)
 		{
 			int k;
 			get_imm(arguments, &k);
@@ -452,9 +454,12 @@ int assemble_16_class(char* cmd, char* arguments)
 	return 0;
 }
 
-int assemble_16_else(char* cmd, char* arguments)
+int assemble_16_else(enum mnemonic mnemonic, char* arguments)
 {
-	if (0 == strcmp(cmd, "elpm"))
+    uint16_t opcode;
+    switch (mnemonic)
+    {
+        case MNEMONIC_ELPM:
 	{
 		if (arguments == NULL)
 		{
@@ -492,7 +497,7 @@ int assemble_16_else(char* cmd, char* arguments)
 		return 1;
 	}
 
-	if (0 == strcmp(cmd, "lpm"))
+        case MNEMONIC_LPM:
 	{
 		if (arguments == NULL)
 		{
@@ -530,21 +535,20 @@ int assemble_16_else(char* cmd, char* arguments)
 		return 1;
 	}
 
-	uint16_t opcode;
-	assert(arguments);
-	if (0 == strcmp(cmd, "asr"))
+        case MNEMONIC_ASR:
 	{
 		assert(arguments);
 		char* rd_str = strtok(arguments, " \n");
 		int rd = reg_from_str(rd_str);
 
-		opcode = pack_16_from_4(0b1001,
+		uint16_t opcode = pack_16_from_4(0b1001,
 				0b0100|(get_bit_from_byte(rd, 4)),
 				rd&0b1111,
 				0b0101);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "bclr"))
+        case MNEMONIC_BCLR:
 	{
 		assert(arguments);
 		char* s_str = strtok(arguments, " \n");
@@ -552,13 +556,14 @@ int assemble_16_else(char* cmd, char* arguments)
 		sscanf(s_str, "%i", &s);
 		assert(s>=0 && s<8);
 
-		opcode = pack_16_from_4(0b1001,
+		uint16_t opcode = pack_16_from_4(0b1001,
 				0b0100,
 				0b1000 | s,
 				0b1000);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "bld"))
+        case MNEMONIC_BLD:
 	{
 		assert(arguments);
 		int rd, b;
@@ -570,8 +575,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				rd&0b1111,
 				b);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "brbc"))
+        case MNEMONIC_BRBC:
 	{
 		assert(arguments);
 		int s,k;
@@ -584,8 +590,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				k&0b1111111,
 				s);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "brbs"))
+        case MNEMONIC_BRBS:
 	{
 		assert(arguments);
 		int s,k;
@@ -598,8 +605,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				k&0b1111111,
 				s);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "bset"))
+        case MNEMONIC_BSET:
 	{
 		assert(arguments);
 		int s;
@@ -608,24 +616,27 @@ int assemble_16_else(char* cmd, char* arguments)
 		opcode = pack_16_from_4(
 				0b1001,0b0100,s,0b1000);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "bst"))
+        case MNEMONIC_BST:
 	{
 		int rd, b;
 		get_rd_imm(arguments, &rd, &b);
 
 		opcode =  get_opcode_rd_b(0b1111101, rd, 0, b);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "cbi"))
+        case MNEMONIC_CBI:
 	{
 		int a, b;
 		get_imm_imm(arguments, &a, &b);
 		opcode = pack_16_from_4(
 				0b1001,0b1000,a>>1, ((a&1)<<3)|b);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "clr"))
+        case MNEMONIC_CLR:
 	{
 		int rd;
 		get_rd(arguments, &rd);
@@ -633,8 +644,9 @@ int assemble_16_else(char* cmd, char* arguments)
 		opcode = get_opcode_rd_rr(0b001001,
 				rd,rd);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "des"))
+        case MNEMONIC_DES:
 	{
 		int k;
 		get_imm(arguments, &k);
@@ -645,8 +657,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				k,
 				0b1011);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "fmul"))
+        case MNEMONIC_FMUL:
 	{
 		int rd,rr;
 		get_rd_rr(arguments, &rd, &rr);
@@ -660,8 +673,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				0b0000 | rd_code,
 				0b1000 | rr_code);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "fmuls"))
+        case MNEMONIC_FMULS:
 	{
 		int rd,rr;
 		get_rd_rr(arguments, &rd, &rr);
@@ -675,8 +689,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				0b1000 | rd_code,
 				0b0000 | rr_code);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "fmulsu"))
+        case MNEMONIC_FMULSU:
 	{
 		int rd,rr;
 		get_rd_rr(arguments, &rd, &rr);
@@ -690,8 +705,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				0b1000 | rd_code,
 				0b1000 | rr_code);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "in"))
+        case MNEMONIC_IN:
 	{
 		int rd, a;
 		get_rd_imm(arguments, &rd, &a);
@@ -703,8 +719,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				rd & 0b1111,
 				a & 0b1111);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "out"))
+        case MNEMONIC_OUT:
 	{
 		int rr, a;
 		get_addr_rr(arguments, &a, &rr);
@@ -715,8 +732,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				strip_bits(rr, 0, 4, 0),
 				strip_bits(a, 0, 4, 0));
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "lac"))
+        case MNEMONIC_LAC:
 	{
 		char* z_str, *rd_str;
 		z_str = strtok(arguments, " ,");
@@ -731,8 +749,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				rd,
 				0b0110);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "las"))
+        case MNEMONIC_LAS:
 	{
 		char* z_str, *rd_str;
 		z_str = strtok(arguments, " ,");
@@ -747,8 +766,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				rd,
 				0b0101);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "lat"))
+        case MNEMONIC_LAT:
 	{
 		char* z_str, *rd_str;
 		z_str = strtok(arguments, " ,");
@@ -763,8 +783,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				rd,
 				0b0111);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "movw"))
+        case MNEMONIC_MOVW:
 	{
 		int rd, rr;
 		get_rd_rr(arguments, &rd, &rr);
@@ -778,8 +799,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				rd_code,
 				rr_code);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "muls"))
+        case MNEMONIC_MULS:
 	{
 		int rd, rr;
 		get_rd_rr(arguments, &rd, &rr);
@@ -793,8 +815,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				rd_code,
 				rr_code);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "mulsu"))
+        case MNEMONIC_MULSU:
 	{
 		int rd, rr;
 		get_rd_rr(arguments, &rd, &rr);
@@ -808,8 +831,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				rd_code,
 				rr_code);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "rcall"))
+        case MNEMONIC_RCALL:
 	{
 		int k;
 		get_imm(arguments, &k);
@@ -820,8 +844,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				strip_bits(k,4,4,0),
 				strip_bits(k,0,4,0));
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "rjmp"))
+        case MNEMONIC_RJMP:
 	{
 		int k;
 		get_imm(arguments, &k);
@@ -832,8 +857,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				strip_bits(k,4,4,0),
 				strip_bits(k,0,4,0));
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "sbi"))
+        case MNEMONIC_SBI:
 	{
 		int a,b;
 		get_imm_imm(arguments, &a, &b);
@@ -845,8 +871,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				strip_bits(a,1,4,0),
 				strip_bits(a,1,1,3)|b);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "ld"))
+        case MNEMONIC_LD:
 	{
 		char* rd_str, *xyz_str;
 		rd_str = strtok(arguments, " ,");
@@ -906,8 +933,9 @@ int assemble_16_else(char* cmd, char* arguments)
 				rd&0b1111,
 				lsb4bits);
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else if (0 == strcmp(cmd, "ldd"))
+        case MNEMONIC_LDD:
 	{
 		char* rd_str, *yz_str, *q_str;
 		rd_str = strtok(arguments, ", ");
@@ -928,22 +956,23 @@ int assemble_16_else(char* cmd, char* arguments)
 				rd&0b01111,
 				(lsb3bit << 3)| (q & 0b000111));
 		fwrite(&opcode, sizeof(opcode), 1, stdout);
+        break;
 	}
-	else
+        default:
 	{
 		return 0;
 	}
-
+    }
 	return 1;
 }
 
-int assemble_16(char* cmd, char* arguments)
+int assemble_16(enum mnemonic mnemonic, char* arguments)
 {
-	if (assemble_16_class(cmd, arguments))
+	if (assemble_16_class(mnemonic, arguments))
 	{
 		return 1;
 	}
-	else if (assemble_16_else(cmd, arguments))
+	else if (assemble_16_else(mnemonic, arguments))
 	{
 		return 1;
 	}
@@ -962,8 +991,9 @@ int main(void)
 		cmd = strtok(line, " \n");
 		if (cmd == NULL)continue;
 		arguments = strtok(NULL, "\n"); //this delemiters should not contain space.
+        enum mnemonic mnemonic = mnemonic_parse_string(cmd);
 
-		if (assemble_16(cmd, arguments))
+		if (assemble_16(mnemonic, arguments))
 		{
 		}
 		else if (assemble_32(cmd, arguments))
@@ -971,7 +1001,7 @@ int main(void)
 		}
 		else
 		{
-			fprintf(stderr, "error cmd");
+			fprintf(stderr, "error cmd:%s\n", cmd);
 		}
 	}
 	return 0;

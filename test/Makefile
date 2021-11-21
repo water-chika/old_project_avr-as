@@ -7,6 +7,7 @@ all: sample.bin sample.my-avr-as.bin
 		diff sample.bin.dump sample.my-avr-as.bin.dump; \
 		echo 'Test fail'; \
 	fi
+	make clean
 
 sample.bin: sample.s
 	avr-as -mmcu=atmega328 sample.s -o sample.elf.o
