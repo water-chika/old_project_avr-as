@@ -275,10 +275,10 @@ struct opcode_rr_b
 	uint8_t lsb3bit;
 };
 
-int assemble_32(char* cmd, char* arguments)
+int assemble_32(enum mnemonic mnemonic, char* arguments)
 {
 	int recognize_flag = 1;
-	if (0 == strcmp(cmd, "call"))
+	if (mnemonic == MNEMONIC_CALL)
 	{
 		int imm;
 		get_imm(arguments, &imm);
@@ -291,7 +291,7 @@ int assemble_32(char* cmd, char* arguments)
 		fwrite(&opcode0, sizeof(opcode0), 1, stdout);
 		fwrite(&opcode1, sizeof(opcode1), 1, stdout);
 	}
-	else if (0 == strcmp(cmd, "lds"))
+	else if (mnemonic == MNEMONIC_LDS)
 	{
 		//This is normal lds instructs
 		//But when chip is AVRrc, there are another lds instruction.
@@ -308,7 +308,7 @@ int assemble_32(char* cmd, char* arguments)
 		fwrite(&opcode0, sizeof(opcode0), 1, stdout);
 		fwrite(&opcode1, sizeof(opcode1), 1, stdout);
 	}
-	else if (0 == strcmp(cmd, "jmp"))
+	else if (mnemonic == MNEMONIC_JMP)
 	{
 		int imm;
 		get_imm(arguments, &imm);
@@ -996,7 +996,7 @@ int main(void)
 		if (assemble_16(mnemonic, arguments))
 		{
 		}
-		else if (assemble_32(cmd, arguments))
+		else if (assemble_32(mnemonic, arguments))
 		{
 		}
 		else
